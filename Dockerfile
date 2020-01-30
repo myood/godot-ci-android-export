@@ -39,10 +39,10 @@ RUN mkdir -p -v ~/android \
 # Download and install SDK tools, accept licences, and create debug.keystore
 RUN mkdir -p -v ~/.android
 RUN echo "count=0" > ~/.android/repositories.cfg
-RUN yes | "~/android/tools/bin/sdkmanager" --licenses
-RUN yes | "~/android/tools/bin/sdkmanager" "tools"
-RUN yes | "~/android/tools/bin/sdkmanager" "platform-tools"
-RUN yes | "~/android/tools/bin/sdkmanager" "build-tools;28.0.3"
+RUN yes | ~/android/tools/bin/sdkmanager --licenses
+RUN yes | ~/android/tools/bin/sdkmanager "tools"
+RUN yes | ~/android/tools/bin/sdkmanager "platform-tools"
+RUN yes | ~/android/tools/bin/sdkmanager "build-tools;28.0.3"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore ~/android/debug.keystore
    
