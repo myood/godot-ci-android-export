@@ -40,8 +40,8 @@ RUN mkdir -p -v ~/android \
 # Download and install SDK tools, accept licences, and create debug.keystore
 RUN mkdir -p -v ~/.android
 RUN echo "count=0" > ~/.android/repositories.cfg
-RUN { yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses || true } > /dev/null 
-RUN { yes | "$ANDROID_HOME/tools/bin/sdkmanager" "tools" "platform-tools" "build-tools;28.0.3" || true } > /dev/null
+RUN yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses || true > /dev/null 
+RUN yes | "$ANDROID_HOME/tools/bin/sdkmanager" "tools" "platform-tools" "build-tools;28.0.3" || true > /dev/null
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore $ANDROID_HOME/debug.keystore
    
