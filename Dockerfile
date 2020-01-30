@@ -48,8 +48,13 @@ RUN yes | ~/android/tools/bin/sdkmanager "build-tools;28.0.3"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore ~/android/debug.keystore
    
-# Initialize Godot so it creates editor_settings-3.tres file, then update android export section
+# Initialize Godot so it creates editor_settings-3.tres file, then add android export section, since it is missing at first
 RUN godot -e -q
 RUN echo 'export/android/adb = "~/android/platform-tools/adb"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore = "~/android/debug.keystore"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/jarsigner = "/usr/bin/jarsigner"' >> ~/.config/godot/editor_settings-3.tres
+RUN echo 'export/android/debug_keystore_user = "androiddebugkey"' >> ~/.config/godot/editor_settings-3.tres
+RUN echo 'export/android/debug_keystore_pass = "android"' >> ~/.config/godot/editor_settings-3.tres
+RUN echo 'export/android/force_system_user = false' >> ~/.config/godot/editor_settings-3.tres
+RUN echo 'export/android/timestamping_authority_url = ""' >> ~/.config/godot/editor_settings-3.tres
+RUN echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_settings-3.tres
