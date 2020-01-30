@@ -33,7 +33,7 @@ RUN mkdir -p ~/android \
     && rm sdk-tools-linux-*.zip \
     && export ANDROID_HOME=~/android
     
-RUN mkdir -p ~/.android \
+RUN mkdir -p ~/.android
 RUN echo "count=0" > "~/.android/repositories.cfg"
 RUN { yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses || true } > /dev/null 
 RUN { yes | "$ANDROID_HOME/tools/bin/sdkmanager" "tools" "platform-tools" "build-tools;28.0.3" || true } > /dev/null
