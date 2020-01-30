@@ -35,7 +35,9 @@ RUN mkdir -p -v ~/android \
     && curl -fsSLO "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" \
     && unzip -q sdk-tools-linux-*.zip \
     && rm sdk-tools-linux-*.zip
-    
+
+ENV ANDROID_HOME ~/android
+
 # Download and install SDK tools, accept licences, and create debug.keystore
 RUN mkdir -p -v ~/.android
 RUN echo "count=0" > ~/.android/repositories.cfg
@@ -51,6 +53,3 @@ RUN godot -e -q
 RUN echo 'export/android/adb = "~/android/platform-tools/adb"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore = "~/android/debug.keystore"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/jarsigner = "/usr/bin/jarsigner"' >> ~/.config/godot/editor_settings-3.tres
-
-RUN echo ~/.android
-RUN readlink -f ~/.android
