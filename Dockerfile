@@ -17,23 +17,24 @@ ENV GODOT_VERSION "3.1.2"
 
 RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux_headless.64.zip \
     && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-    && mkdir ~/.cache \
-    && mkdir -p ~/.config/godot \
-    && mkdir -p ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+    && mkdir -v ~/.cache \
+    && mkdir -p -v ~/.config/godot \
+    && mkdir -p -v ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && unzip Godot_v${GODOT_VERSION}-stable_linux_headless.64.zip \
     && mv Godot_v${GODOT_VERSION}-stable_linux_headless.64 /usr/local/bin/godot \
     && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
     && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && rm -f Godot_v${GODOT_VERSION}-stable_export_templates.tpz Godot_v${GODOT_VERSION}-stable_linux_headless.64.zip
     
-RUN mkdir -p ~/android \
+RUN mkdir -p -v ~/android \
     && cd ~/android \
     && curl -fsSLO "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" \
     && unzip -q sdk-tools-linux-*.zip \
     && rm sdk-tools-linux-*.zip \
     && export ANDROID_HOME=~/android
     
-RUN mkdir -p ~/.android && echo "count=0" > "~/.android/repositories.cfg"
+RUN mkdir -p -v ~/.android
+RUN echo "count=0" > ~/.android/repositories.cfg
 RUN { yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses || true } > /dev/null 
 RUN { yes | "$ANDROID_HOME/tools/bin/sdkmanager" "tools" "platform-tools" "build-tools;28.0.3" || true } > /dev/null
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
