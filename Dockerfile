@@ -52,7 +52,7 @@ RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -key
 RUN godot -e -q
 RUN echo 'export/android/adb = "~/android/platform-tools/adb"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore = "~/android/debug.keystore"' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/jarsigner = "/usr/bin/jarsigner"' >> ~/.config/godot/editor_settings-3.tres
+RUN echo 'export/android/jarsigner = "/usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore_user = "androiddebugkey"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore_pass = "android"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/force_system_user = false' >> ~/.config/godot/editor_settings-3.tres
