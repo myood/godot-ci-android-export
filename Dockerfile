@@ -34,16 +34,15 @@ RUN mkdir -p -v ~/android \
     && cd ~/android \
     && curl -fsSLO "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" \
     && unzip -q sdk-tools-linux-*.zip \
-    && rm sdk-tools-linux-*.zip \
-    && export ANDROID_HOME=~/android
+    && rm sdk-tools-linux-*.zip
     
 # Download and install SDK tools, accept licences, and create debug.keystore
 RUN mkdir -p -v ~/.android
 RUN echo "count=0" > ~/.android/repositories.cfg
-RUN yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses || true
-RUN yes | "$ANDROID_HOME/tools/bin/sdkmanager" "tools" || true
-RUN yes | "$ANDROID_HOME/tools/bin/sdkmanager" "platform-tools" || true
-RUN yes | "$ANDROID_HOME/tools/bin/sdkmanager" "build-tools;28.0.3" || true
+RUN yes | "~/android/tools/bin/sdkmanager" --licenses
+RUN yes | "~/android/tools/bin/sdkmanager" "tools"
+RUN yes | "~/android/tools/bin/sdkmanager" "platform-tools"
+RUN yes | "~/android/tools/bin/sdkmanager" "build-tools;28.0.3"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore ~/android/debug.keystore
    
