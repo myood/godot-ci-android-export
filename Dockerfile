@@ -47,7 +47,6 @@ RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -key
    
 # Initialize Godot so it creates editor_settings-3.tres file, then update android export section
 RUN godot -e -q
-RUN grep "android" ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/adb = "~/android/platform-tools/adb"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore = "~/android/debug.keystore"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/jarsigner = "/usr/bin/jarsigner"' >> ~/.config/godot/editor_settings-3.tres
