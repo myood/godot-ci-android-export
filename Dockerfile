@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     zip \
     curl \
-    openjdk-8-jdk
+    openjdk-8-jdk \
     && rm -rf /var/lib/apt/lists/*
 
 ENV GODOT_VERSION "3.1.2"
