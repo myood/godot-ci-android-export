@@ -1,0 +1,24 @@
+image: myood/godot-ci-android-export:latest
+
+stages:
+  - export
+
+
+before_script:
+  - grep android ~/.config/godot/editor_settings-3.tres
+  - mkdir -v -p build/android
+
+android_debug:
+  stage: export
+  script:
+    - ls -l /usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner
+    - ls -l /root/android/debug.keystore
+    - ls -l /root/android/platform-tools/adb
+    - godot -v --export-debug "Android" build/android/package_name.apk
+    - ls build/android/package_name.apk
+    
+  artifacts: 
+    name: apk
+    paths:
+      - build/android/package_name.apk
+
