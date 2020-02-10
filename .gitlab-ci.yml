@@ -59,6 +59,7 @@ android_release:
     - godot --quiet --export "Android Release x86" export/android/${APP_NAME}-x86.apk >&- || true
     - godot --quiet --export "Android Release x86-64" export/android/${APP_NAME}-x86-64.apk >&- || true
     # Job fails if any export failed
+    - cd export/android
     - ls ${APP_NAME}-armeabi.apk
     - ls ${APP_NAME}-arm64.apk 
     - ls ${APP_NAME}-x86.apk 
