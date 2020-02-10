@@ -1,24 +1,70 @@
 image: myood/godot-ci-android-export:latest
 
+# cmd >&- closes `cmd` std out file descriptor for better performance
+
+variables:
+  APP_NAME: "Example"
+
 stages:
+  - unit_tests
   - export
+  
+# Download Gut from https://github.com/bitwes/Gut and install in your project
+# As a result you should have a following directory in your repo: `addons/gut`
+# If you don't need unit_tests, simply comment below section and `unit_tests` from stages
+unit_tests:
+  stage: unit_tests
+  script:
+    - godot -d -s --path . addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit
 
-
-before_script:
-  - grep android ~/.config/godot/editor_settings-3.tres
-  - mkdir -v -p build/android
-
+# Debug export is already setup in Docker image
+# You only need to create export named "Android" with desired HW targets (armeabi, arm, ...)
+# And then commit export_presets.cfg
 android_debug:
   stage: export
-  script:
+  before_script:
+    # This is simply (semi-manual :-)) double-check if editor settings are OK for debug export
+    - grep android ~/.config/godot/editor_settings-3.tres
     - ls -l /usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner
     - ls -l /root/android/debug.keystore
     - ls -l /root/android/platform-tools/adb
-    - godot -v --export-debug "Android" build/android/package_name.apk
-    - ls build/android/package_name.apk
-    
+    # Create directory for artifacts
+    - mkdir -v -p export/android
+  script:
+    - godot --quiet --export-debug "Android" export/android/dungeon-puzzle-debug.apk >&-
+    - ls export/android/${APP_NAME}-debug.apk # ls
   artifacts: 
-    name: apk
+    name: dungeon-puzzle-debug
     paths:
-      - build/android/package_name.apk
+      - export/android/${APP_NAME}-debug.apk
 
+# Easiest way to setup is to:
+# 1. create exports from Godot GUI with names "Android Release ..." matching names from android_release:script:
+# 2. test it locally with your release kestore
+# 3. replace release keystore password from export_presets.cfg with a fake one
+# 4. commit release keystore to the project (not 100% safe, but at least real password is not stored in repo)
+# 5.1 Go to Gitlab Project > Settings > CI/CD > Variables
+# 5.2 Create variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD with your release keystore password as value.
+android_release:
+  stage: export
+  before_script:
+    - grep android ~/.config/godot/editor_settings-3.tres
+    - ls -l /root/android/platform-tools/adb
+    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
+    - mkdir -v -p export/android
+  script:
+    # Run all exports, even if some fail
+    - godot --quiet --export "Android Release Armeabi-v7a" export/android/${APP_NAME}-armeabi.apk >&- || true
+    - godot --quiet --export "Android Release Arm64-v8a" export/android/${APP_NAME}-arm64.apk >&- || true
+    - godot --quiet --export "Android Release x86" export/android/${APP_NAME}-x86.apk >&- || true
+    - godot --quiet --export "Android Release x86-64" export/android/${APP_NAME}-x86-64.apk >&- || true
+    # Job fails if any export failed
+    - ls ${APP_NAME}-armeabi.apk
+    - ls ${APP_NAME}-arm64.apk 
+    - ls ${APP_NAME}-x86.apk 
+    - ls ${APP_NAME}-x86-64.apk
+  artifacts: 
+    name: ${APP_NAME}-release
+    when: always # Publish any successful export
+    paths:
+      - export/android/
