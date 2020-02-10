@@ -31,10 +31,10 @@ android_debug:
     # Create directory for artifacts
     - mkdir -v -p export/android
   script:
-    - godot --quiet --export-debug "Android" export/android/dungeon-puzzle-debug.apk >&-
+    - godot --quiet --export-debug "Android" export/android/${APP_NAME}-debug.apk >&-
     - ls export/android/${APP_NAME}-debug.apk # ls
   artifacts: 
-    name: dungeon-puzzle-debug
+    name: ${APP_NAME}-debug
     paths:
       - export/android/${APP_NAME}-debug.apk
 
