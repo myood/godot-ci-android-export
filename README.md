@@ -17,7 +17,10 @@ Commit your project's export_presets.cfg to the repository. Presets should be co
 - "Android Release Arm64-v8a"
 - "Android Release x86"
 - "Android Release x86-64"  
+
 You can follow offical tutorial and skip the initial setup.  
+
+### !!!
 Make sure to read .gitlab-ci.yml. It has comments how to setup release export properly and unit tests.
 
 ## Customization
