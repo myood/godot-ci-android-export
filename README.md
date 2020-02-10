@@ -10,13 +10,15 @@ Docker image installs Godot and all necessary dependencies for Android debug exp
 
 ## How can I use it in my project?
 
-Copy .gitlab-ci.yml to your project repository. Commit your project's export_presets.cfg to the repository. Presets should be configured with exports that match the names used in .gitlab-ci.yml:
+Copy .gitlab-ci.yml to your project repository.  
+Commit your project's export_presets.cfg to the repository. Presets should be configured with exports that match the names used in .gitlab-ci.yml:
 - "Android" (for debug export)
 - "Android Release Armeabi-v7a"
 - "Android Release Arm64-v8a"
 - "Android Release x86"
-- "Android Release x86-64"
-You can follow offical tutorial and skip the initial setup. Also make sure to read .gitlab-ci.yml. It has comments how to setup release export properly.
+- "Android Release x86-64"  
+You can follow offical tutorial and skip the initial setup.  
+Make sure to read .gitlab-ci.yml. It has comments how to setup release export properly and unit tests.
 
 ## Customization
 Naturally you can customize this configuration, for exmaple by skipping some target HW. Simply comment or remove unnecessary things. Adding other targets (for example Windows) should be easily found on the web - google it.
