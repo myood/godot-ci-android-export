@@ -20,7 +20,7 @@ Commit your project's export_presets.cfg to the repository. Presets should be co
 
 You can follow offical tutorial and skip the initial setup.  
 
-### !!!
+### Important:
 Make sure to read .gitlab-ci.yml. It has comments how to setup release export properly and unit tests.
 
 ## Customization
