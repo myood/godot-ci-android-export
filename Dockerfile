@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:bionic
 LABEL author="artur@barichello.me,myoodster@gmail.com"
 
 # Install development and other tools
