@@ -14,20 +14,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-8-jdk \
     && rm -rf /var/lib/apt/lists/*
 
-# Use Godot 3.2
-ENV GODOT_VERSION "3.2"
+# Use Godot 3.2.2-beta2
+ENV GODOT_VERSION "3.2.2"
+ENV GODOT_DL_SUBDIR "3.2.2/beta2/"
+ENV GODOT_RELEASE "beta2"
 
 # Download and install Godot Engine (headless) and export templates
-RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux_headless.64.zip \
-    && wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip \
+    && wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz \
     && mkdir -v ~/.cache \
     && mkdir -p -v ~/.config/godot \
-    && mkdir -p -v ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
-    && unzip Godot_v${GODOT_VERSION}-stable_linux_headless.64.zip \
-    && mv Godot_v${GODOT_VERSION}-stable_linux_headless.64 /usr/local/bin/godot \
-    && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
-    && rm -f Godot_v${GODOT_VERSION}-stable_export_templates.tpz Godot_v${GODOT_VERSION}-stable_linux_headless.64.zip
+    && mkdir -p -v ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} \
+    && unzip Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip \
+    && mv Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64 /usr/local/bin/godot \
+    && unzip Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz \
+    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} \
+    && rm -f Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip
     
 # Download and install Android SDK
 RUN mkdir -p -v ~/android \
