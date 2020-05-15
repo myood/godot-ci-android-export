@@ -1,4 +1,4 @@
-FROM ubuntu:cosmic
+FROM ubuntu:focal
 LABEL author="artur@barichello.me,myoodster@gmail.com"
 
 # Install development and other tools
