@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-8-jdk \
     && rm -rf /var/lib/apt/lists/*
 
-# Use Godot 3.2.2-beta4
+# Use Godot 3.2.2-stable
 ENV GODOT_VERSION "3.2.2"
 ENV GODOT_DL_SUBDIR "3.2.2"
 ENV GODOT_RELEASE "stable"
