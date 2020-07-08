@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Use Godot 3.2.2-beta4
 ENV GODOT_VERSION "3.2.2"
-ENV GODOT_DL_SUBDIR "3.2.2/beta4/"
-ENV GODOT_RELEASE "beta4"
+ENV GODOT_DL_SUBDIR "3.2.2"
+ENV GODOT_RELEASE "stable"
 
 # Download and install Godot Engine (headless) and export templates
 RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip \
