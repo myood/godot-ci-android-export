@@ -23,5 +23,8 @@ You can follow offical tutorial and skip the initial setup.
 ### Important:
 Make sure to read .gitlab-ci.yml. It has comments how to setup release export properly and unit tests.
 
+*It is highly recommended* to use explicit godot versions like ```godot-3.1.2``` instead of ```latest```.
+Otherwise your builds may break due to incompatibilities between Godot versions when tag ```latest``` is updated to newer Godot version.
+
 ## Customization
 Naturally you can customize this configuration, for exmaple by skipping some target HW. Simply comment or remove unnecessary things. Adding other targets (for example Windows) should be easily found on the web - google it.
