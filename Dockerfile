@@ -38,7 +38,7 @@ RUN mkdir -p -v ~/android \
     && unzip -q sdk-tools-linux-*.zip \
     && rm sdk-tools-linux-*.zip
 
-ENV ANDROID_HOME ~/android
+ENV ANDROID_HOME /root/android
 
 # Download and install SDK tools, accept licences, and create debug.keystore
 RUN mkdir -p -v ~/.android
