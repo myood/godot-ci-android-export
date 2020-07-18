@@ -1,4 +1,4 @@
-image: myood/godot-ci-android-export:latest
+image: myood/godot-ci-android-export:godot-3.2.2
 
 # cmd >&- closes `cmd` std out file descriptor for better performance
 
@@ -18,8 +18,10 @@ unit_tests:
     - godot -d -s --path . addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit
 
 # Debug export is already setup in Docker image
-# You only need to create export named "Android" with desired HW targets (armeabi, arm, ...)
-# And then commit export_presets.cfg
+# Things left to do (from Godot Editor GUI - no way to make them from CLI as of 07.2020) :
+# - Project -> Install Android Build Template
+# - create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
+# And then commit export_presets.cfg AND whole android directory
 android_debug:
   stage: export
   before_script:
@@ -41,7 +43,7 @@ android_debug:
       - export/android/${APP_NAME}-debug.apk
 
 # Easiest way to setup is to:
-# 1. create exports from Godot GUI with names "Android Release ..." matching names from android_release:script:
+# 1. create exports from Godot GUI with names "Android Release ..." matching names from android_release:script: (a little more explanation above in debug export section)
 # 2. test it locally with your release kestore
 # 3. replace release keystore password from export_presets.cfg with a fake one
 # 4. commit release keystore to the project (not 100% safe, but at least real password is not stored in repo)
