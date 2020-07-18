@@ -23,13 +23,15 @@ unit_tests:
 android_debug:
   stage: export
   before_script:
-    # This is simply (semi-manual :-)) double-check if editor settings are OK for debug export
-    - grep android ~/.config/godot/editor_settings-3.tres
-    - ls -l /usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner
-    - ls -l /root/android/debug.keystore
-    - ls -l /root/android/platform-tools/adb
+    # Quick check if basic settings are properly set
+    - grep -F "export/android/jarsigner =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
+    - grep -F "export/android/debug_keystore =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
+    - grep -F "export/android/adb =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
+    - grep -F "export/android/custom_build_sdk_path =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
     # Create directory for artifacts
     - mkdir -v -p export/android
+    # Prevent android build gradlew from failing due to not executable
+    - chmod +x android/build/gradlew
   script:
     - godot --quiet --export-debug "Android" export/android/${APP_NAME}-debug.apk >&-
     - ls export/android/${APP_NAME}-debug.apk # ls
@@ -48,10 +50,9 @@ android_debug:
 android_release:
   stage: export
   before_script:
-    - grep android ~/.config/godot/editor_settings-3.tres
-    - ls -l /root/android/platform-tools/adb
     - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
     - mkdir -v -p export/android
+    - chmod +x android/build/gradlew
   script:
     # Run all exports, even if some fail
     - godot --quiet --export "Android Release Armeabi-v7a" export/android/${APP_NAME}-armeabi.apk >&- || true
