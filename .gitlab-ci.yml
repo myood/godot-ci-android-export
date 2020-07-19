@@ -37,7 +37,7 @@ android_debug:
   script:
     - godot --quiet --export-debug "Android" export/android/${APP_NAME}-debug.apk >&-
     - ls export/android/${APP_NAME}-debug.apk # ls
-  artifacts: 
+  artifacts:
     name: ${APP_NAME}-debug
     paths:
       - export/android/${APP_NAME}-debug.apk
@@ -49,26 +49,55 @@ android_debug:
 # 4. commit release keystore to the project (not 100% safe, but at least real password is not stored in repo)
 # 5.1 Go to Gitlab Project > Settings > CI/CD > Variables
 # 5.2 Create variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD with your release keystore password as value.
-android_release:
+android_armeabi:
   stage: export
   before_script:
     - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
     - mkdir -v -p export/android
     - chmod +x android/build/gradlew
   script:
-    # Run all exports, even if some fail
-    - godot --quiet --export "Android Release Armeabi-v7a" export/android/${APP_NAME}-armeabi.apk >&- || true
-    - godot --quiet --export "Android Release Arm64-v8a" export/android/${APP_NAME}-arm64.apk >&- || true
-    - godot --quiet --export "Android Release x86" export/android/${APP_NAME}-x86.apk >&- || true
-    - godot --quiet --export "Android Release x86-64" export/android/${APP_NAME}-x86-64.apk >&- || true
-    # Job fails if any export failed
-    - cd export/android
-    - ls ${APP_NAME}-armeabi.apk
-    - ls ${APP_NAME}-arm64.apk 
-    - ls ${APP_NAME}-x86.apk 
-    - ls ${APP_NAME}-x86-64.apk
-  artifacts: 
+    - godot --quiet --export "Android Release Armeabi-v7a" export/android/${APP_NAME}-armeabi.apk >&-
+  artifacts:
     name: ${APP_NAME}-release
-    when: always # Publish any successful export
     paths:
       - export/android/
+
+android_arm64:
+  stage: export
+  before_script:
+    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
+    - mkdir -v -p export/android
+    - chmod +x android/build/gradlew
+  script:
+    - godot --quiet --export "Android Release Arm64-v8a" export/android/${APP_NAME}-arm64.apk >&- 
+  artifacts:
+    name: ${APP_NAME}-release
+    paths:
+      - export/android/
+
+android_x86:
+  stage: export
+  before_script:
+    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
+    - mkdir -v -p export/android
+    - chmod +x android/build/gradlew
+  script:
+    - godot --quiet --export "Android Release x86" export/android/${APP_NAME}-x86.apk >&-
+  artifacts:
+    name: ${APP_NAME}-release
+    paths:
+      - export/android/
+
+android_x86_64:
+  stage: export
+  before_script:
+    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
+    - mkdir -v -p export/android
+    - chmod +x android/build/gradlew
+  script:
+    - godot --quiet --export "Android Release x86-64" export/android/${APP_NAME}-x86-64.apk >&-
+  artifacts:
+    name: ${APP_NAME}-release
+    paths:
+      - export/android/
+
