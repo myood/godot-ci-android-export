@@ -29,6 +29,8 @@ RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v$
     && mv Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64 /usr/local/bin/godot \
     && unzip Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz \
     && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} \
+    && mkdir -p -v /github/home \
+    && cp -r ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} /github/home/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} \
     && rm -f Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip
     
 # Download and install Android SDK
@@ -61,4 +63,5 @@ RUN echo 'export/android/debug_keystore_pass = "android"' >> ~/.config/godot/edi
 RUN echo 'export/android/force_system_user = false' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/timestamping_authority_url = ""' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/custom_build_sdk_path = "/root/android-sdk/cmdline-tools"' >> ~/.config/godot/editor_settings-3.tres 
+RUN echo 'export/android/custom_build_sdk_path = "/root/android-sdk/cmdline-tools"' >> ~/.config/godot/editor_settings-3.tres
+RUN cp ~/.config/godot/editor_settings-3.tres /github/home/.config/godot/editor_settings-3.tres
