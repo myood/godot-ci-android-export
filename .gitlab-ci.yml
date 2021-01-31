@@ -1,5 +1,4 @@
-image: myood/godot-ci-android-export:latest
-
+image: myood/godot-ci-android-export:godot-3.2.3
 # cmd >&- closes `cmd` std out file descriptor for better performance
 
 variables:
