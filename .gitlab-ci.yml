@@ -49,6 +49,9 @@ android_debug:
 # 4. commit release keystore to the project (not 100% safe, but at least real password is not stored in repo)
 # 5.1 Go to Gitlab Project > Settings > CI/CD > Variables
 # 5.2 Create variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD with your release keystore password as value.
+### TODO - update this section
+### For Best Security: the release keystore file should be K8S secret variable (not commited to the repo)
+### see here - https://github.com/aBARICHELLO/godot-ci#android
 android_armeabi:
   stage: export
   before_script:
