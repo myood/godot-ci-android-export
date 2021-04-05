@@ -49,6 +49,10 @@ android_debug:
 # 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
 android:
   stage: export
+  rules:
+    - if: $SECRET_RELEASE_KEYSTORE_BASE64
+    - if: $SECRET_RELEASE_KEYSTORE_USER
+    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
   before_script:
     - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
     - mkdir -v -p build/android
@@ -67,6 +71,10 @@ android:
 
 android_arm64:
   stage: export
+  rules:
+    - if: $SECRET_RELEASE_KEYSTORE_BASE64
+    - if: $SECRET_RELEASE_KEYSTORE_USER
+    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
   before_script:
     - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
     - mkdir -v -p build/android
@@ -85,6 +93,10 @@ android_arm64:
 
 android_x86:
   stage: export
+  rules:
+    - if: $SECRET_RELEASE_KEYSTORE_BASE64
+    - if: $SECRET_RELEASE_KEYSTORE_USER
+    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
   before_script:
     - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
     - mkdir -v -p build/android
@@ -103,6 +115,10 @@ android_x86:
 
 android_x86_64:
   stage: export
+  rules:
+    - if: $SECRET_RELEASE_KEYSTORE_BASE64
+    - if: $SECRET_RELEASE_KEYSTORE_USER
+    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
   before_script:
     - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
     - mkdir -v -p build/android
