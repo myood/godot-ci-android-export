@@ -34,10 +34,10 @@ RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v$
 # Download and install Android SDK
 RUN mkdir -p -v /root/android-sdk/cmdline-tools \
     && cd /root/android-sdk/cmdline-tools \
-    && curl -fsSLO "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" \
-    && unzip -q sdk-tools-linux-*.zip \
-    && rm sdk-tools-linux-*.zip \
-    && mv tools latest
+    && curl -fsSLO "https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip" \
+    && unzip -q commandlinetools-linux-*.zip \
+    && rm commandlinetools-linux-*.zip \
+    && mv cmdline-tools latest
 
 ENV ANDROID_HOME /root/android-sdk
 
