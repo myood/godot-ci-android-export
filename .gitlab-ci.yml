@@ -42,19 +42,19 @@ android_debug:
     paths:
       - export/android/${APP_NAME}-debug.apk
 
-# Easiest way to setup is to:
-# 1. create exports from Godot GUI with names "Android Release ..." matching names from android_release:script: (a little more explanation above in debug export section)
-# 2. test it locally with your release kestore
-# 3. replace release keystore password from export_presets.cfg with a fake one
-# 4. commit release keystore to the project (not 100% safe, but at least real password is not stored in repo)
-# 5.1 Go to Gitlab Project > Settings > CI/CD > Variables
-# 5.2 Create variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD with your release keystore password as value.
-### TODO - update this section
-### For Best Security: the release keystore file should be K8S secret variable (not commited to the repo)
-### see here - https://github.com/aBARICHELLO/godot-ci#android
-android_armeabi:
+# Android Release Job. You will need to include keystore and password in the GitLab variable settings: 
+# 1. Take your generated keystore and convert it to Base64: `base64 release.keystore -w 0`
+# 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
+# 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
+# 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
+android:
   stage: export
   before_script:
+    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
+    - mkdir -v -p build/android
+    - cd $EXPORT_NAME
+    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
+    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
     - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
     - mkdir -v -p export/android
     - chmod +x android/build/gradlew
@@ -68,6 +68,11 @@ android_armeabi:
 android_arm64:
   stage: export
   before_script:
+    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
+    - mkdir -v -p build/android
+    - cd $EXPORT_NAME
+    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
+    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
     - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
     - mkdir -v -p export/android
     - chmod +x android/build/gradlew
@@ -81,6 +86,11 @@ android_arm64:
 android_x86:
   stage: export
   before_script:
+    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
+    - mkdir -v -p build/android
+    - cd $EXPORT_NAME
+    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
+    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
     - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
     - mkdir -v -p export/android
     - chmod +x android/build/gradlew
@@ -94,6 +104,11 @@ android_x86:
 android_x86_64:
   stage: export
   before_script:
+    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
+    - mkdir -v -p build/android
+    - cd $EXPORT_NAME
+    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
+    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
     - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
     - mkdir -v -p export/android
     - chmod +x android/build/gradlew
