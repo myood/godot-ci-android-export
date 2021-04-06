@@ -1,5 +1,5 @@
 FROM ubuntu:bionic
-LABEL author="artur@barichello.me,myoodster@gmail.com"
+LABEL author="myoodster@gmail.com"
 
 # Install development and other tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
