@@ -14,9 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-8-jdk \
     && rm -rf /var/lib/apt/lists/*
 
-# Use Godot 3.2.3-stable
+# Use Godot 3.3-rc7
 ENV GODOT_VERSION "3.3"
-ENV GODOT_DL_SUBDIR "rc7"
+ENV GODOT_DL_SUBDIR "3.3"
 ENV GODOT_RELEASE "rc7"
 
 # Download and install Godot Engine (headless) and export templates
