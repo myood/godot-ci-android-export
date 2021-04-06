@@ -15,9 +15,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Use Godot 3.2.3-stable
-ENV GODOT_VERSION "3.2.3"
-ENV GODOT_DL_SUBDIR "3.2.3"
-ENV GODOT_RELEASE "stable"
+ENV GODOT_VERSION "3.3"
+ENV GODOT_DL_SUBDIR "rc7"
+ENV GODOT_RELEASE "rc7"
 
 # Download and install Godot Engine (headless) and export templates
 RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip \
@@ -47,13 +47,15 @@ RUN echo "count=0" > /root/.android/repositories.cfg
 RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "tools"
 RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools"
-RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;28.0.3"
+RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;30.0.1"
+RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-29"
+RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-30"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore /root/android-sdk/debug.keystore
    
 # Initialize Godot so it creates editor_settings-3.tres file, then add android export section, since it is missing at first
 RUN godot -e -q
-RUN echo 'export/android/adb = "/root/android-sdk/cmdline-tools/platform-tools/adb"' >> ~/.config/godot/editor_settings-3.tres
+RUN "export/android/adb = \"$(find /root/android-sdk/ -name adb)\"" >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore = "/root/android-sdk/debug.keystore"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/jarsigner = "/usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore_user = "androiddebugkey"' >> ~/.config/godot/editor_settings-3.tres
@@ -61,4 +63,5 @@ RUN echo 'export/android/debug_keystore_pass = "android"' >> ~/.config/godot/edi
 RUN echo 'export/android/force_system_user = false' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/timestamping_authority_url = ""' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/custom_build_sdk_path = "/root/android-sdk/cmdline-tools"' >> ~/.config/godot/editor_settings-3.tres 
+RUN echo 'export/android/custom_build_sdk_path = "/root/android-sdk"' >> ~/.config/godot/editor_settings-3.tres 
+RUN echo 'export/android/android_sdk_path = "/root/android-sdk"' >> ~/.config/godot/editor_settings-3.tres 
