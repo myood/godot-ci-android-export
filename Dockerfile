@@ -49,7 +49,6 @@ RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "tools"
 RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools"
 RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;30.0.1"
 RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-29"
-RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-30"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore /root/android-sdk/debug.keystore
    
