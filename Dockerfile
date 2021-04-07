@@ -20,16 +20,15 @@ ENV GODOT_DL_SUBDIR "3.3/rc7"
 ENV GODOT_RELEASE "rc7"
 
 # Download and install Godot Engine (headless) and export templates
-RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip \
-    && wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz \
+RUN wget https://github.com/myood/godot-mini/releases/download/Godot-3.x-with-gradle-output-2/godot-headless.zip \
+    && wget https://github.com/myood/godot-mini/releases/download/Godot-3.x-with-gradle-output-2/android-templates.zip \
     && mkdir -v ~/.cache \
     && mkdir -p -v ~/.config/godot \
     && mkdir -p -v ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} \
-    && unzip Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip \
-    && mv Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64 /usr/local/bin/godot \
-    && unzip Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz \
-    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} \
-    && rm -f Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip
+    && unzip godot-headless.zip \
+    && mv godot_server.x11.opt.tools.64 /usr/local/bin/godot \
+    && unzip android-templates.zip -d templates/ \
+    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE}
     
 # Download and install Android SDK
 RUN mkdir -p -v /root/android-sdk/cmdline-tools \
