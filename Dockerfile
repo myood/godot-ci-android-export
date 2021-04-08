@@ -17,8 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Use Godot 3.3-rc7
 ENV GODOT_VERSION "3.3"
-ENV GODOT_DL_SUBDIR "3.3/rc7"
-ENV GODOT_RELEASE "rc7"
+ENV GODOT_RELEASE "rc"
 
 # Download and install Godot Engine (headless) and export templates
 RUN wget https://github.com/myood/godot-mini/releases/download/Godot-3.x-with-gradle-output-2/godot-headless.zip \
