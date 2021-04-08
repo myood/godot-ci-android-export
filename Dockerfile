@@ -27,6 +27,7 @@ RUN wget https://github.com/myood/godot-mini/releases/download/Godot-3.x-with-gr
     && mkdir -p -v ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE} \
     && unzip godot-headless.zip \
     && mv godot_server.x11.opt.tools.64 /usr/local/bin/godot \
+    && chmod +x /usr/local/bin/godot \
     && unzip android-templates.zip -d templates/ \
     && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE}
     
