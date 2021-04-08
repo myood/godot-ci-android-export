@@ -1,7 +1,8 @@
-FROM ubuntu:bionic
+FROM ubuntu:20.04
 LABEL author="myoodster@gmail.com"
 
 # Install development and other tools
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     git \
