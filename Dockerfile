@@ -46,7 +46,7 @@ ENV ANDROID_HOME /root/android-sdk
 RUN mkdir -p -v /root/.android
 RUN echo "count=0" > /root/.android/repositories.cfg
 RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager "tools" "platform-tools" "build-tools;30.0.1" "platforms;android-29" "cmake;3.10.2.4988404" "ndk;21.4.7075529"
+RUN yes | /root/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/root/android-sdk "tools" "platform-tools" "build-tools;30.0.1" "platforms;android-29" "cmake;3.10.2.4988404" "ndk;21.4.7075529"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore /root/android-sdk/debug.keystore
    
