@@ -46,19 +46,13 @@ ENV ANDROID_HOME /root/android-sdk
 RUN mkdir -p -v /root/.android
 RUN echo "count=0" > /root/.android/repositories.cfg
 RUN yes | /root/android-sdk-installer/cmdline-tools/latest/bin/sdkmanager --licenses
-RUN yes | /root/android-sdk-installer/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;30.0.1" "platforms;android-29" "cmdline-tools;latest" "cmake;3.10.2.4988404" "ndk;21.4.7075529"
+RUN yes | /root/android-sdk-installer/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "build-tools;30.0.3" "platforms;android-29" "cmdline-tools;latest" "cmake;3.10.2.4988404" "ndk;21.4.7075529"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore /root/android-sdk/debug.keystore
    
 # Initialize Godot so it creates editor_settings-3.tres file, then add android export section, since it is missing at first
 RUN godot -e -q
-RUN echo 'export/android/adb = "/root/android-sdk/platform-tools/adb"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore = "/root/android-sdk/debug.keystore"' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/jarsigner = "/usr/lib/jvm/java-8-openjdk-amd64/bin/jarsigner"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore_user = "androiddebugkey"' >> ~/.config/godot/editor_settings-3.tres
 RUN echo 'export/android/debug_keystore_pass = "android"' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/force_system_user = false' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/timestamping_authority_url = ""' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/shutdown_adb_on_exit = true' >> ~/.config/godot/editor_settings-3.tres
-RUN echo 'export/android/custom_build_sdk_path = "/root/android-sdk"' >> ~/.config/godot/editor_settings-3.tres 
 RUN echo 'export/android/android_sdk_path = "/root/android-sdk"' >> ~/.config/godot/editor_settings-3.tres 
