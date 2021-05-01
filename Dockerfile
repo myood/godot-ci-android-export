@@ -33,8 +33,8 @@ RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_DL_SUBDIR}/Godot_v$
     && rm -f Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux_headless.64.zip
     
 # Download and install Android SDK
-RUN mkdir -p -v /root/android-sdk/cmdline-tools \
-    && cd /root/android-sdk/cmdline-tools \
+RUN mkdir -p -v /root/android-sdk-installer/cmdline-tools \
+    && cd /root/android-sdk-installer/cmdline-tools \
     && curl -fsSLO "https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip" \
     && unzip -q commandlinetools-linux-*.zip \
     && rm commandlinetools-linux-*.zip \
@@ -45,8 +45,8 @@ ENV ANDROID_HOME /root/android-sdk
 # Download and install SDK tools, accept licences, and create debug.keystore
 RUN mkdir -p -v /root/.android
 RUN echo "count=0" > /root/.android/repositories.cfg
-RUN yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-RUN yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "build-tools;30.0.1" "platforms;android-29" "cmdline-tools;latest" "cmake;3.10.2.4988404" "ndk;21.4.7075529"
+RUN yes | /root/android-sdk-installer/cmdline-tools/latest/bin/sdkmanager --licenses
+RUN yes | /root/android-sdk-installer/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "build-tools;30.0.1" "platforms;android-29" "cmdline-tools;latest" "cmake;3.10.2.4988404" "ndk;21.4.7075529"
 RUN keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 \
     && mv debug.keystore /root/android-sdk/debug.keystore
    
