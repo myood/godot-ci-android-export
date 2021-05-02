@@ -6,22 +6,31 @@ image: myood/godot-ci-android-export:godot-3.3
 stages:
   - export
 
+# Debug export is already setup in Docker image
+# Things left to do for both debug and release exports (from Godot Editor GUI - no way to make them from CLI as of 07.2020) :
+# - Project -> Install Android Build Template
+# - create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
+# And then commit export_presets.cfg AND whole android directory
 before_script:
-  # Config sanity check
-  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_BASE64 != '' ]]"
-  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_USER != '' ]]"
-  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_PASSWORD != '' ]]"
+  # Verify if docker image has properly set editor settings for Android Export
   - grep -F "export/android/debug_keystore =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
   - grep -F "export/android/android_sdk_path =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
   # Setup build
   - chmod +x android/build/gradlew
-  - sed "s@\(minSdk[[:space:]]\+:[[:space:]]\+\)[[:digit:]]\+@\121@g" -i android/build/config.gradle
-  # Setup release keystore
+  # Config sanity check for Android Release Jobs. You will need to include keystore and password in the GitLab variable settings: 
+  # 1. Take your generated keystore and convert it to Base64: `base64 release.keystore -w 0`
+  # 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
+  # 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
+  # 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
+  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_BASE64 != '' ]]"
+  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_USER != '' ]]"
+  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_PASSWORD != '' ]]"
+  # Setup release keystore file, user and password
   - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
   - sed 's@keystore/release[[:space:]]*=[[:space:]]*".*"@keystore/release = "/root/release.keystore"@g' -i export_presets.cfg
   - sed 's@keystore/release_password[[:space:]]*=[[:space:]]*".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
   - sed 's@keystore/release_user[[:space:]]*=[[:space:]]*".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
-  
+
 android_debug:
   stage: export
   when: manual
