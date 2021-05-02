@@ -1,4 +1,4 @@
-# godot-ci-android-export [3.3 is a WORK IN PROGRESS]
+# godot-ci-android-export
 
 ## What is this?
 
