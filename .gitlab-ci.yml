@@ -37,7 +37,7 @@ android_release_armeabi:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release Armeabi" dungeon-puzzle-armeabi.apk
+    - godot --export "Android Release Armeabi-v7a" dungeon-puzzle-armeabi.apk
   artifacts: 
     name: release
     when: always
@@ -48,7 +48,7 @@ android_release_arm:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release Arm" dungeon-puzzle-arm.apk
+    - godot --export "Android Release Arm64-v8a" dungeon-puzzle-arm.apk
   artifacts: 
     name: release
     when: always
@@ -70,7 +70,7 @@ android_release_x86_64:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release x86_64" dungeon-puzzle-x86-64.apk
+    - godot --export "Android Release x86-64" dungeon-puzzle-x86-64.apk
   artifacts: 
     name: release
     when: always
