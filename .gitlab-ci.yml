@@ -7,10 +7,16 @@ stages:
   - export
 
 # Debug export is already setup in Docker image
-# Things left to do for both debug and release exports (from Godot Editor GUI - no way to make them from CLI as of 07.2020) :
-# - Project -> Install Android Build Template
-# - create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
-# And then commit export_presets.cfg AND whole android directory
+# Things left to do:
+#### For both debug and release exports (from Godot Editor GUI - no way to make them from CLI as of 07.2020) :
+  # - Project -> Install Android Build Template
+  # - create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
+  # And then commit export_presets.cfg AND whole android directory
+#### For release export
+  # 1. Take your generated keystore and convert it to Base64: `base64 release.keystore -w 0`
+  # 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
+  # 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
+  # 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
 before_script:
   # Verify if docker image has properly set editor settings for Android Export
   - grep -F "export/android/debug_keystore =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
@@ -18,10 +24,6 @@ before_script:
   # Setup build
   - chmod +x android/build/gradlew
   # Config sanity check for Android Release Jobs. You will need to include keystore and password in the GitLab variable settings: 
-  # 1. Take your generated keystore and convert it to Base64: `base64 release.keystore -w 0`
-  # 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
-  # 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
-  # 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
   - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_BASE64 != '' ]]"
   - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_USER != '' ]]"
   - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_PASSWORD != '' ]]"
