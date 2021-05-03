@@ -3,6 +3,9 @@ variables:
 
 image: myood/godot-ci-android-export:godot-3.3
 
+variables:
+  APP_NAME: "Example"
+
 stages:
   - export
 
@@ -37,53 +40,53 @@ android_debug:
   stage: export
   when: manual
   script:
-    - godot --verbose --debug --export-debug "Android Debug" dungeon-puzzle-debug.apk
+    - godot --verbose --debug --export-debug "Android Debug" $APP_NAME-debug.apk
   artifacts: 
     name: android
     when: always
     paths:
-      - dungeon-puzzle-debug.apk
+      - $APP_NAME-debug.apk
 
 android_release_armeabi:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release Armeabi-v7a" dungeon-puzzle-armeabi.apk
+    - godot --export "Android Release Armeabi-v7a" $APP_NAME-armeabi.apk
   artifacts: 
     name: release
     when: always
     paths:
-      - dungeon-puzzle-armeabi.apk
+      - $APP_NAME-armeabi.apk
 
 android_release_arm:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release Arm64-v8a" dungeon-puzzle-arm.apk
+    - godot --export "Android Release Arm64-v8a" $APP_NAME-arm.apk
   artifacts: 
     name: release
     when: always
     paths:
-      - dungeon-puzzle-arm.apk
+      - $APP_NAME-arm.apk
 
 android_release_x86:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release x86" dungeon-puzzle-x86.apk
+    - godot --export "Android Release x86" $APP_NAME-x86.apk
   artifacts: 
     name: release
     when: always
     paths:
-      - dungeon-puzzle-x86.apk
+      - $APP_NAME-x86.apk
 
 android_release_x86_64:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release x86-64" dungeon-puzzle-x86-64.apk
+    - godot --export "Android Release x86-64" $APP_NAME-x86-64.apk
   artifacts: 
     name: release
     when: always
     paths:
-      - dungeon-puzzle-x86-64.apk
+      - $APP_NAME-x86-64.apk
