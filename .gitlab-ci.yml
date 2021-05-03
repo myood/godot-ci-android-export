@@ -1,137 +1,92 @@
-image: myood/godot-ci-android-export:latest
+variables:
+  DOCKER_DRIVER: overlay2
 
-# cmd >&- closes `cmd` std out file descriptor for better performance
+image: myood/godot-ci-android-export:godot-3.3
 
 variables:
   APP_NAME: "Example"
 
 stages:
-  - unit_tests
   - export
-  
-# Download Gut from https://github.com/bitwes/Gut and install in your project
-# As a result you should have a following directory in your repo: `addons/gut`
-# If you don't need unit_tests, simply comment below section and `unit_tests` from stages
-unit_tests:
-  stage: unit_tests
-  script:
-    - godot -d -s --path . addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit
 
 # Debug export is already setup in Docker image
-# Things left to do (from Godot Editor GUI - no way to make them from CLI as of 07.2020) :
-# - Project -> Install Android Build Template
-# - create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
-# And then commit export_presets.cfg AND whole android directory
+# Things left to do:
+#### For both debug and release exports (from Godot Editor GUI - no way to make them from CLI as of 07.2020) :
+  # - Project -> Install Android Build Template
+  # - create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
+  # And then commit export_presets.cfg AND whole android directory
+#### For release export
+  # 1. Take your generated keystore and convert it to Base64: `base64 release.keystore -w 0`
+  # 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
+  # 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
+  # 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
+before_script:
+  # Verify if docker image has properly set editor settings for Android Export
+  - grep -F "export/android/debug_keystore =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
+  - grep -F "export/android/android_sdk_path =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
+  # Setup build
+  - chmod +x android/build/gradlew
+  # Config sanity check for Android Release Jobs. You will need to include keystore and password in the GitLab variable settings: 
+  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_BASE64 != '' ]]"
+  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_USER != '' ]]"
+  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_PASSWORD != '' ]]"
+  # Setup release keystore file, user and password
+  - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
+  - sed 's@keystore/release[[:space:]]*=[[:space:]]*".*"@keystore/release = "/root/release.keystore"@g' -i export_presets.cfg
+  - sed 's@keystore/release_password[[:space:]]*=[[:space:]]*".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
+  - sed 's@keystore/release_user[[:space:]]*=[[:space:]]*".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
+
 android_debug:
   stage: export
-  before_script:
-    # Quick check if basic settings are properly set
-    - grep -F "export/android/jarsigner =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
-    - grep -F "export/android/debug_keystore =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
-    - grep -F "export/android/adb =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
-    - grep -F "export/android/custom_build_sdk_path =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
-    # Create directory for artifacts
-    - mkdir -v -p export/android
-    # Prevent android build gradlew from failing due to not executable
-    - chmod +x android/build/gradlew
+  when: manual
   script:
-    - godot --quiet --export-debug "Android" export/android/${APP_NAME}-debug.apk >&-
-    - ls export/android/${APP_NAME}-debug.apk # ls
-  artifacts:
-    name: ${APP_NAME}-debug
+    - godot --verbose --debug --export-debug "Android Debug" $APP_NAME-debug.apk
+  artifacts: 
+    name: android
+    when: always
     paths:
-      - export/android/${APP_NAME}-debug.apk
+      - $APP_NAME-debug.apk
 
-# Android Release Job. You will need to include keystore and password in the GitLab variable settings: 
-# 1. Take your generated keystore and convert it to Base64: `base64 release.keystore -w 0`
-# 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
-# 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
-# 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
-android:
+android_release_armeabi:
   stage: export
-  rules:
-    - if: $SECRET_RELEASE_KEYSTORE_BASE64
-    - if: $SECRET_RELEASE_KEYSTORE_USER
-    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
-  before_script:
-    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
-    - mkdir -v -p build/android
-    - cd $EXPORT_NAME
-    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
-    - mkdir -v -p export/android
-    - chmod +x android/build/gradlew
+  when: manual
   script:
-    - godot --quiet --export "Android Release Armeabi-v7a" export/android/${APP_NAME}-armeabi.apk >&-
-  artifacts:
-    name: ${APP_NAME}-release
+    - godot --export "Android Release Armeabi-v7a" $APP_NAME-armeabi.apk
+  artifacts: 
+    name: release
+    when: always
     paths:
-      - export/android/
+      - $APP_NAME-armeabi.apk
 
-android_arm64:
+android_release_arm:
   stage: export
-  rules:
-    - if: $SECRET_RELEASE_KEYSTORE_BASE64
-    - if: $SECRET_RELEASE_KEYSTORE_USER
-    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
-  before_script:
-    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
-    - mkdir -v -p build/android
-    - cd $EXPORT_NAME
-    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
-    - mkdir -v -p export/android
-    - chmod +x android/build/gradlew
+  when: manual
   script:
-    - godot --quiet --export "Android Release Arm64-v8a" export/android/${APP_NAME}-arm64.apk >&- 
-  artifacts:
-    name: ${APP_NAME}-release
+    - godot --export "Android Release Arm64-v8a" $APP_NAME-arm.apk
+  artifacts: 
+    name: release
+    when: always
     paths:
-      - export/android/
+      - $APP_NAME-arm.apk
 
-android_x86:
+android_release_x86:
   stage: export
-  rules:
-    - if: $SECRET_RELEASE_KEYSTORE_BASE64
-    - if: $SECRET_RELEASE_KEYSTORE_USER
-    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
-  before_script:
-    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
-    - mkdir -v -p build/android
-    - cd $EXPORT_NAME
-    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
-    - mkdir -v -p export/android
-    - chmod +x android/build/gradlew
+  when: manual
   script:
-    - godot --quiet --export "Android Release x86" export/android/${APP_NAME}-x86.apk >&-
-  artifacts:
-    name: ${APP_NAME}-release
+    - godot --export "Android Release x86" $APP_NAME-x86.apk
+  artifacts: 
+    name: release
+    when: always
     paths:
-      - export/android/
+      - $APP_NAME-x86.apk
 
-android_x86_64:
+android_release_x86_64:
   stage: export
-  rules:
-    - if: $SECRET_RELEASE_KEYSTORE_BASE64
-    - if: $SECRET_RELEASE_KEYSTORE_USER
-    - if: $SECRET_RELEASE_KEYSTORE_PASSWORD
-  before_script:
-    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
-    - mkdir -v -p build/android
-    - cd $EXPORT_NAME
-    - sed 's@keystore/release=".*"@keystore/release="'/root/release.keystore'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_user=".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
-    - sed 's@keystore/release_password=".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
-    - mkdir -v -p export/android
-    - chmod +x android/build/gradlew
+  when: manual
   script:
-    - godot --quiet --export "Android Release x86-64" export/android/${APP_NAME}-x86-64.apk >&-
-  artifacts:
-    name: ${APP_NAME}-release
+    - godot --export "Android Release x86-64" $APP_NAME-x86-64.apk
+  artifacts: 
+    name: release
+    when: always
     paths:
-      - export/android/
-
+      - $APP_NAME-x86-64.apk
