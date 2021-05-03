@@ -1,4 +1,4 @@
-# godot-ci-android-export
+# godot-ci-android-export [3.3 WORK IN PROGRESS, YOU CAN TRY IT, BUT IT MAY FAIL]
 
 ## What is this?
 
