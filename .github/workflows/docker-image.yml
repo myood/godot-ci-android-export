@@ -34,8 +34,8 @@ jobs:
         # Docker build arguments in format KEY=VALUE,KEY=VALUE
         # buildArgs: # optional
         # Docker registry username
-        username: $DOCKERHUB_USER
+        username: env.DOCKERHUB_USER
         # Docker registry password
-        password: $DOCKERHUB_PASS
+        password: env.DOCKERHUB_PASS
         # GitHub organization to push image to (if not current)
         # gitHubOrg: # optional
