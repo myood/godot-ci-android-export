@@ -32,5 +32,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: godot-3.3.3
+          tags: myood/godot-ci-android-export:godot-3.3.3
           labels: godot-3.3.3
