@@ -26,7 +26,7 @@ jobs:
         # Tags override for Docker image
         # tags: # optional
         # Target Docker registry
-        registry: dockerhub.com
+        # registry: dockerhub.com
         # Location of Dockerfile, if not Dockerfile in root directory
         # dockerfile: # optional, default is Dockerfile
         # Directory to run `docker build` from, if not project root
