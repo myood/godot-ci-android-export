@@ -13,6 +13,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    #- uses: actions/checkout@v2
+    #- name: Build the Docker image
+    #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Docker Build, Tag & Push
+      # You may pin to the exact commit or the version.
+      # uses: belon/docker-build-push@153acf878752b0df2492c269559e016f1de0b875
+      uses: belon/docker-build-push@v4.0
+      with:
+        # Name of the Docker image
+        image: myood/godot-ci-android-export:godot-3.2.2
+        # Tags override for Docker image
+        # tags: # optional
+        # Target Docker registry
+        registry: dockerhub.com
+        # Location of Dockerfile, if not Dockerfile in root directory
+        # dockerfile: # optional, default is Dockerfile
+        # Directory to run `docker build` from, if not project root
+        # directory: # optional
+        # Docker build arguments in format KEY=VALUE,KEY=VALUE
+        # buildArgs: # optional
+        # Docker registry username
+        username: $DOCKERHUB_USER
+        # Docker registry password
+        password: $DOCKERHUB_PASS
+        # GitHub organization to push image to (if not current)
+        # gitHubOrg: # optional
