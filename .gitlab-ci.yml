@@ -12,29 +12,24 @@ stages:
 # Debug export is already setup in Docker image
 # Things left to do:
 #### For both debug and release exports (from Godot Editor GUI - no way to make them from CLI as of 07.2020) :
-  # - Project -> Install Android Build Template
-  # - create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
-  # And then commit export_presets.cfg AND whole android directory
-#### For release export
-  # 1. Take your generated keystore and convert it to Base64: `base64 release.keystore -w 0`
-  # 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
-  # 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
-  # 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
+  # 1. Project -> Install Android Build Template
+  # 2. create export named "Android" with desired HW targets (armeabi, arm, ...), enable custom build (check "Use Custom Build" in export settings)
+  # 3. then commit export_presets.cfg to the project repository.
+  # Finally, choose how to use build template on the CI.
+  # If you want to use build template installed when creating export_presets.cfg, then commit whole android directory.
+  # If you do no want to pollute project with commit of the build template, then uncomment "OPTIONAL" part lines below.
 before_script:
-  # Verify if docker image has properly set editor settings for Android Export
-  - grep -F "export/android/debug_keystore =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
-  - grep -F "export/android/android_sdk_path =" ~/.config/godot/editor_settings-3.tres | grep '".*"' -o | xargs ls
+  # OPTIONAL : Use android build template from docker image myood/godot-ci-android-export
+  #          : Enable this, if android build template is not part of project repository
+  #          : Any necessary plugins should also be installed automatically as part of 'before_script'
+  # Install android template
+  # - mkdir -pv android/build
+  # - mkdir -pv android/plugins
+  # - echo "${GODOT_VERSION}.${GODOT_RELEASE}" > android/.build_version
+  # - unzip ~/.local/share/godot/templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip -d android/build
+  # - touch android/build/.gdignore
   # Setup build
   - chmod +x android/build/gradlew
-  # Config sanity check for Android Release Jobs. You will need to include keystore and password in the GitLab variable settings: 
-  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_BASE64 != '' ]]"
-  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_USER != '' ]]"
-  - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_PASSWORD != '' ]]"
-  # Setup release keystore file, user and password
-  - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
-  - sed 's@keystore/release[[:space:]]*=[[:space:]]*".*"@keystore/release = "/root/release.keystore"@g' -i export_presets.cfg
-  - sed 's@keystore/release_password[[:space:]]*=[[:space:]]*".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
-  - sed 's@keystore/release_user[[:space:]]*=[[:space:]]*".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
 
 android_debug:
   stage: export
@@ -47,46 +42,27 @@ android_debug:
     paths:
       - $APP_NAME-debug.apk
 
-android_release_armeabi:
+#### For release export
+  # 1. Take your generated release keystore and convert it to Base64: `base64 release.keystore -w 0`
+  # 2. Go to GitLab Project > Settings > CI/CD > Variables and copy the Base64-encoded keystore value in a new variable `K8S_SECRET_RELEASE_KEYSTORE_BASE64` as type variable.
+  # 3. Create a second variable K8S_SECRET_RELEASE_KEYSTORE_USER as type variable with the alias of your keystore as value.
+  # 4. Create a third variable K8S_SECRET_RELEASE_KEYSTORE_PASSWORD as type variable with the password of your keystore as value.
+android_release:
   stage: export
   when: manual
   script:
-    - godot --export "Android Release Armeabi-v7a" $APP_NAME-armeabi.apk
+    # Config sanity check for Android Release Jobs. You will need to include keystore and password in the GitLab variable settings: 
+    - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_BASE64 != '' ]]"
+    - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_USER != '' ]]"
+    - bash -c -- "[[ $K8S_SECRET_RELEASE_KEYSTORE_PASSWORD != '' ]]"
+    # Setup release keystore file, user and password
+    - echo $K8S_SECRET_RELEASE_KEYSTORE_BASE64 | base64 --decode > /root/release.keystore
+    - sed 's@keystore/release[[:space:]]*=[[:space:]]*".*"@keystore/release = "/root/release.keystore"@g' -i export_presets.cfg
+    - sed 's@keystore/release_password[[:space:]]*=[[:space:]]*".*"@keystore/release_password="'$K8S_SECRET_RELEASE_KEYSTORE_PASSWORD'"@g' -i export_presets.cfg
+    - sed 's@keystore/release_user[[:space:]]*=[[:space:]]*".*"@keystore/release_user="'$K8S_SECRET_RELEASE_KEYSTORE_USER'"@g' -i export_presets.cfg
+    - godot --verbose --debug --export-debug "Android Release" ${APP_NAME}.aab
   artifacts: 
-    name: release
+    name: ${APP_NAME}-android
     when: always
     paths:
-      - $APP_NAME-armeabi.apk
-
-android_release_arm:
-  stage: export
-  when: manual
-  script:
-    - godot --export "Android Release Arm64-v8a" $APP_NAME-arm.apk
-  artifacts: 
-    name: release
-    when: always
-    paths:
-      - $APP_NAME-arm.apk
-
-android_release_x86:
-  stage: export
-  when: manual
-  script:
-    - godot --export "Android Release x86" $APP_NAME-x86.apk
-  artifacts: 
-    name: release
-    when: always
-    paths:
-      - $APP_NAME-x86.apk
-
-android_release_x86_64:
-  stage: export
-  when: manual
-  script:
-    - godot --export "Android Release x86-64" $APP_NAME-x86-64.apk
-  artifacts: 
-    name: release
-    when: always
-    paths:
-      - $APP_NAME-x86-64.apk
+      - ${APP_NAME}.aab
