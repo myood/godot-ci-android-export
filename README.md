@@ -1,10 +1,9 @@
-# WORK IN PROGRESS
-
 # godot-ci-android-export
 
 ## What is this?
 
 Docker image and gitlab pipelines configuration for exporting your Godot project to Android. Supports debug and release exports.
+Sample project here https://gitlab.com/myoodster/godot-ci-android-export-sample-project
 
 ## How it works?
 
