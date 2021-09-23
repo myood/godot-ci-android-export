@@ -2,7 +2,9 @@
 
 ## What is this?
 
-Docker image and gitlab pipelines configuration for exporting your Godot project to Android. Supports debug and release exports.
+Docker image and gitlab pipelines configuration for exporting your Godot project to Android.
+- Supports debug and release exports.
+- Supports APK and AAB exports.
 
 # Sample project available...
 
