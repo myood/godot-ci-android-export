@@ -1,0 +1,29 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+env:
+  GODOT_VERSION: 3.2.2
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    container: myood/godot-ci-android-export:godot-3.2.2
+    steps:
+      - uses: actions/checkout@v2.3.2
+      - run: |
+          mkdir -v -p ~/.local/share/godot/templates
+          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+          mkdir -v -p ~/.config/godot/
+          cp /root/.config/godot/editor_settings-3.tres ~/.config/godot/editor_settings-3.tres
+          chmod +x android/build/gradlew
+          godot --verbose --debug --export-debug "Android" mpw-debug.apk
+        name: Run in container
